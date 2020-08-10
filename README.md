@@ -1,37 +1,29 @@
-# DisplayFlex
-> Flexible based customizable grid. [documentation](https://miguelroot.github.io/displayflex/)
+# Config Grid
+> Grid based customizable grid. [documentation](https://miguelroot.github.io/displayflex/)
 
 
 ## Install:
 
 ### npm
-``npm i displayflex``
+``npm i create-sass``
 
 ### import
 ```
-@import "node_modules/displayflex/displayflex";
+@import "node_modules/create-sass/create-sass";
 ```
 ## config
 ```
-$dev: false;
-$rem: 16px;
+$unit: .5rem !default;
+$dev: true !default;
+$columns: 12 !default;
+$container-gap: 0 $unit*2 $unit*5 !default;
+$col-gap: 0 $unit*2 30px !default;
 
-$columns: (
-    "breakpoints": (
-        "xs": 0,
-        "sm": 769px,
-        "md": 1024px,
-        "lg": 1216px,
-        "xl": 1408px,
-    ),
-    "columns": 12,
-    "container-gap": 5px 15px 30px,
-    "col-gap": 5px 10px 40px,
-);
-$gaps: (
-    "top": 10px 15px,
-    "bottom": 10px 30px,
-    "right": 10px 30px,
-    "left": 10px 30px,
+$breakpoints: (
+    "xs": 0,
+    "sm": 769px,
+    "md": 1024px,
+    "lg": 1216px,
+    "xl": 1408px,
 );
 ```
