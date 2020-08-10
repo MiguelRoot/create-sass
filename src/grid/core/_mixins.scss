@@ -1,0 +1,161 @@
+/// mixin
+@mixin row($sizes) {
+    $list-sizes: $sizes;
+
+    $list-total: length($list-sizes);
+
+    $fr-total: count-unit($list-sizes, "fr");
+    $px-total: count-unit($list-sizes, "px");
+
+    $sum-total: sum($list-sizes, "px");
+
+    @for $i from 1 through length($list-sizes) {
+        @if (str-index(nth($list-sizes, $i) + "", "fr")) {
+            @if ($px-total == 0) {
+                & > .col:nth-child(#{$list-total}n + #{$i}) {
+                    width: #{100% / $fr-total};
+                }
+            } @else {
+                & > .col:nth-child(#{$list-total}n + #{$i}) {
+                    width: calc(#{100% / $fr-total} - #{$sum-total / $fr-total});
+                }
+            }
+        } @else {
+            & > .col:nth-child(#{$list-total}n + #{$i}) {
+                width: nth($list-sizes, $i);
+            }
+        }
+    }
+
+}
+
+
+/// padding para los col
+/// @param   {list} $list - x y
+/// @return  {css} padding
+@mixin row-gap($list) {
+    & > .col {
+        padding-right: nth($list, 1);
+        padding-left: nth($list, 1);
+    }
+    @if length($list) == 2 {
+        & > .col {
+            padding-top: nth($list, 2);
+            padding-bottom: nth($list, 2);
+        }
+    }
+
+}
+
+
+@mixin from($breakpoint) {
+    @if map-has-key($breakpoints, $breakpoint) {
+        $sizes: map-get($breakpoints, $breakpoint);
+        @media only screen and (min-width: nth($sizes, 1)) {
+            @content;
+        }
+    } @else if(type-of($breakpoint) == number) {
+        @media only screen and (min-width: $breakpoint) {
+            @content;
+        }
+    }
+}
+
+
+@mixin to($breakpoint) {
+    @if map-has-key($breakpoints, $breakpoint) {
+        $sizes: bp-get($breakpoint);
+        @media only screen and (max-width: nth($sizes, 1)) {
+            @content;
+        }
+    } @else if(type-of($breakpoint) == number) {
+        @media only screen and (max-width: $breakpoint) {
+            @content;
+        }
+    }
+}
+
+
+
+@mixin fromTo($from,$to){
+    // Si ambos son breakpoints del core
+    @if bp-has-key($from) and bp-has-key($to){
+      @if bp-get($to) > bp-get($from) {
+        @media screen and (min-width : bp-get($from)) and (max-width : bp-get($to) - 1px) {
+          @content
+        }
+      } @else {
+        @error "El segundo argumento del mixin fromTo debe ser mayor que el primero"
+      }
+    }
+  
+    // Si solo $from es breakpoint del core
+    @else if index-is-bp($from) and not index-is-bp($to){
+      @if  unit-is-valid($to) {
+        @if to-px($to) > to-px(getBp($from)) {
+          @media screen and (min-width : getBp($from)) and (max-width : toPx($to) - 1px) {
+            @content
+          }
+        } @else {
+          @error "El segundo argumento del mixin fromTo debe ser mayor que el primero"
+        }
+      } @else {
+        @error "El segundo argumento del mixin fromTo() debe ser un breakpoint del Core (#{map-keys($breakpoints)}) o un número en px, em o rem"
+      }
+    }
+  
+    // Si solo $to es breakpoint del core
+    @else if not index-is-bp($from) and index-is-bp($to) {
+      @if unit-is-valid($from) {
+        @if to-px(getBp($to)) > tto-pxPx($from){
+          @media screen and (min-width : $from) and (max-width : getBp($to) - 1px) {
+            @content
+          }
+        } @else {
+          @error "El segundo argumento del mixin fromTo debe ser mayor que el primero"
+        }
+      }
+      @else {
+        @error "El primer argumento del mixin fromTo() debe ser un breakpoint del Core (#{map-keys($breakpoints)}) o un número en px, em o rem"
+      }
+    }
+  
+    // Si no son breakpoints del core pero son breakpoints válidos (px, em, rem)
+    @else if unit-is-valid($from) and unit-is-valid($to){
+      @if to-px($to) > to-px($from) {
+        @media screen and (min-width : $from) and (max-width : to-px($to) - 1px) {
+          @content
+        }
+      } @else {
+        @error "El segundo argumento del mixin fromTo debe ser mayor que el primero"
+      }
+    }
+  
+    // Si al menos hay un breakpoint inválido
+    @else {
+      @error 'Los argumentos del mixin fromTo() deben ser breakpoints del Core (#{map-keys($breakpoints)}) o números en px, em o rem';
+    }
+  }
+  
+
+
+
+@mixin fit($list) {
+    position: relative;
+    flex: auto;
+    $fit-h: nth($list, 2) * 100 / nth($list, 1);
+    &::after {
+        content: '';
+        display: block;
+        width: 1px;
+        padding-top: $fit-h * 1%;
+    }
+    &> * {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+    }
+}
+

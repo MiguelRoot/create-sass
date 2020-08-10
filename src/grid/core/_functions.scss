@@ -1,0 +1,163 @@
+
+
+/// copia el key de un map para un list
+/// @param   {map} $map - map a copiar
+/// @param   {list} $list - donde se agregara los key del map
+/// @return  {map} nuevo map creado de un list
+@function list-to-map($map, $list) {
+    $containerKey: map-keys($map);
+    $nmap: () !default;
+    @for $i from 1 through length($list) {
+        $cmap: (#{nth($containerKey, $i)}: nth($list, $i));
+        $nmap: map-merge($nmap, $cmap);
+    }
+    @return $nmap;
+}
+
+$container-gap-map: list-to-map($breakpoints, $container-gap);
+
+$col-gap-map: list-to-map($breakpoints, $col-gap);
+
+
+/// obtiene un valor de un map segun el  nombre indice
+/// @param   {string} $index ingresa el indice del breakpoint
+/// @return  {$val} retorna el valur del indice señalado
+@function bp-get($index) {
+    @return  map-get($breakpoints, $index);
+}
+
+
+
+
+
+/// verifica si el index ingresado existe en el map
+/// @param   {string} $index del breakpoint
+/// @return  {bolean} retorna true si existe o false si no.
+@function bp-has-key($index) {
+    @return map-has-key($breakpoints, $index);
+}
+
+/// px to rem
+@function rem($px) {
+    @return ($px / 16px) * 1rem;
+  }
+
+
+/// suma las mismas unidades
+/// @param   {list} $list - que se sumara las mismas unidades '50px 30px 1fr'
+/// @param   {type number} $unit - typo de unidad que se sumara 'px'
+/// @return  {number} el total  de la unidad
+@function sum($list, $unit) {
+    $sum: 0 !default;
+    @each $num in $list {
+        @if (str-index($num + "", $unit)) {
+            $sum: $sum + $num;
+        }
+    }
+    @return $sum;
+}
+
+@function size-gap($fgap) {
+    @if (length($fgap) == 1) {
+        @return $fgap;
+    } @else if (length($fgap) < length($breakpoints)) {
+        $nsgap: $fgap !default;
+        @for $i from length($fgap) to length($breakpoints) {
+            $nsgap2: append($nsgap, nth($fgap, -1));
+            $nsgap: $nsgap2;
+        }
+        @return $nsgap;
+    } @else {
+        @return $fgap;
+    }
+}
+
+@function repeat($count, $value: 1) {
+    $return: ();
+
+    @for $i from 1 through $count {
+        $return: join($return, $value);
+    }
+
+    @return $return;
+}
+
+
+/// cuenta la cantidad de typo de numeros
+/// @param   {list} $list - un list con typos de numeros '50px 30px 1fr'
+/// @param   {type number} $unit - se ingresa la unidad(px) a contar
+/// @return  {number} regresa la cantidad de la unidad
+@function count-unit($list, $unit) {
+    $return: 0;
+    @for $i from 1 through length($list) {
+        @if (unit(nth($list, $i)) == $unit) {
+            $return: $return + 1;
+        }
+    }
+    @return $return;
+}
+
+
+/// funcion obtener valor de un map
+/// @param   {map} $itk-map - el objec map
+/// @param   {number} $itk-index - la posicion del valor que quiero
+/// @return  {valor} el valor segun la numero ingresado
+@function map-item-key($itk-map, $itk-index) {
+    $keys: map-keys($itk-map);
+    $index: nth($keys, $itk-index);
+    @return map-get($itk-map, $index);
+}
+
+
+/// quita el typo de numero 'px, fr etc'
+/// @param   {number} $number - unidad 100px, 1fr 1vw
+/// @return  {number} sin typo
+@function unit($number) {
+    @if type-of($number) == "number" and not unitless($number) {
+        @return $number / ($number * 0 + 1);
+    }
+    @return $number;
+}
+
+
+/// devuelve true si la unidad cumple con la condiciones de (em, rem, px)
+/// @param  $unit - con prueva si su unidad es valida
+/// @return   {bolean} - retorna true o false
+@function unit-is-valid($unit){
+    @if type-of($bp) == number and (unit($unit) == 'px' or unit($unit) == 'em' or unit($unit) == 'rem') {
+      @return true;
+    } @else {
+      @return false;
+    }
+}
+
+/// devuelve true si la unidad cumple con la condiciones de (em, rem, px)
+/// @param  $unit - con prueva si su unidad es valida
+/// @return   {bolean} - retorna true o false
+@function index-is-bp($bp){
+    @if map-get($breakpoints,$bp) {
+      @return true;
+    } @else {
+      @return false;
+    }
+  }
+
+
+/// convierte en ren en formato px
+/// @param  $value - valor a convertir
+/// @return   {number} - en px
+@function to-px($value){
+    @if type-of($value) == number {
+        @if unit($value) == 'em'{
+        @return ($value / 1em) * 16px;
+        } @else if unit($value) == 'rem'{
+        @return ($value / 1rem) * 16px
+        } @else if unit($value) == 'px' {
+        @return $value;
+        } @else {
+        @error "La funcion toPx() solo acepta numeros en em o rem o px";
+        }
+    } @else {
+        @error "La funcion toPx() solo acepta numeros en em o rem";
+    }
+}

@@ -1,0 +1,72 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+h1 {
+    font-size: 90px;
+    margin-top: 30px;
+    margin-bottom: 5px;
+    font-weight: normal;
+}
+
+
+
+h4,
+h2,
+p {
+    margin-bottom: 10px;
+}
+h2 {
+    margin-top: 80px;
+}
+
+.main {
+    background-color: #eee;
+    padding: 15px 0;
+}
+
+.row {
+    background: #d6ecfa;
+    margin-bottom: 15px;
+    margin-top: 20px;
+}
+.col > .box {
+    background: #1779ba;
+    color: white;
+    text-align: center;
+    padding: 7px;
+    height: 2rem;
+}
+.col:nth-child(odd) > .box {
+    background: #37a0e6;
+}
+
+pre.prettyprint {
+    background-color: white;
+    padding: 1.25em;
+    border: 1px solid #e6e6e6;
+    border-left-width: 5px;
+    margin-top: 15px;
+    margin-bottom: 35px;
+}
+
+code {
+    padding: 0.2em 0.4em;
+    margin: 0;
+    font-size: 85%;
+    background-color: rgba(27, 31, 35, 0.05);
+    border-radius: 3px;
+}
+
+.myNameClass {
+    @include row(100px 1fr 100px);
+
+    //   @include from(md) {
+    //       @include row(gap 10px nogap, 100px 1fr 1fr 100px);
+    //   }
+}
+
+.myNameFit {
+    @include fit(250px 50px);
+}
+

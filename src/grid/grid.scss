@@ -1,0 +1,62 @@
+// $rem: 16px !default;
+
+
+
+
+
+/////////////CONFIG GRID////////////
+$unit: .5rem !default;
+$dev: true !default;
+$columns: 12 !default;
+$container-gap: 0 $unit*2 $unit*5 !default;
+$col-gap: 0 $unit*2 30px !default;
+
+// Breakpoints
+$breakpoints: (
+    "xs": 0,
+    "sm": 769px,
+    "md": 1024px,
+    "lg": 1216px,
+    "xl": 1408px,
+);
+
+$sizes: map-keys($breakpoints);
+
+// @import "core/variables";
+@import "core/functions";
+@import "core/mixins";
+@import "core/normalize";
+@import "core/base";
+@import "core/flex";
+
+
+
+
+// $gaps: (
+//     "top": 1px,
+//     "bottom": 1px,
+//     "right": 1px,
+//     "left": 1px,
+// ) !default;
+
+
+
+
+
+
+
+
+// // Configuraciones
+// $prototype        : true !default;
+// $dev              : false !default;
+// $dev-hover        : false !default;
+// $max-width        : 1200px !default;
+// $l-unit           : .5rem !default;
+// $gap              : $l-unit * 4 !default;  // 2rem
+// $fractions        : 3 6 !default;
+// $legacy           : false !default;
+// $container        : ed-container !default;
+// $item             : ed-item !default;
+// $grid-container   : ed-grid !default;
+// $grid-item        : -cols- !default;
+// $max-grid-columns : 12 !default;

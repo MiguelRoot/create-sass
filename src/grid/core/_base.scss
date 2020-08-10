@@ -1,0 +1,17 @@
+html {
+  box-sizing: border-box;
+  // overflow-x: hidden;
+  // overflow-y: scroll;
+}
+
+*,
+*:after,
+*:before {
+  box-sizing: inherit;
+  padding: 0;
+  margin: 0;
+}
+
+// .box {
+//   overflow-x: hidden;
+// }

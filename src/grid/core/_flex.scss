@@ -1,0 +1,206 @@
+
+.container {
+    margin-right: auto;
+    margin-left: auto;
+    max-width: map-item-key($breakpoints, -1);
+    &.max {
+        overflow-x: hidden;
+    }
+}
+
+.col {
+    display: block;
+    flex: 0 0 auto;
+    width: 100%;
+}
+
+@each $index, $breakpoint in $breakpoints {
+    .#{$index}-show {
+        display: none;
+    }
+}
+
+@each $key, $breakpoint in $breakpoints {
+    $name: $key;
+    $size: nth($breakpoint, 1);
+
+    @include from($name) {
+        .container {
+            @if $size > 0 {
+                max-width: $size;
+            }
+            @if map-has-key($container-gap-map, $name) {
+                padding-left: map-get($container-gap-map, $name);
+                padding-right: map-get($container-gap-map, $name);
+            }
+        }
+
+        @if map-has-key($col-gap-map, $name) {
+            .row {
+                $one-col-gap: map-get($col-gap-map, $name);
+                &.gap-x.nogap {
+                    margin-left: -$one-col-gap;
+                    margin-right: -$one-col-gap;
+                }
+                &.gap.nogap {
+                    margin-left: -$one-col-gap;
+                    margin-right: -$one-col-gap;
+                }
+                &.gap {
+                    & > .col {
+                        padding: ($one-col-gap/2) $one-col-gap;
+                    }
+                }
+                &.gap-x {
+                    & > .col {
+                        padding-right: $one-col-gap;
+                        padding-left: $one-col-gap;
+                    }
+                }
+                &.gap-y {
+                    & > .col {
+                        padding-top: $one-col-gap;
+                        padding-bottom: $one-col-gap;
+                    }
+                }
+            }
+        }
+//offset
+        @for $i from 1 through $columns {
+            .#{$name}-#{$i} {
+                width: (100% / $columns * $i);
+            }
+        }
+
+        .#{$name}-start {
+            justify-content: start;
+            &-block {
+                @extend .#{$name}-start;
+                text-align: left;
+            }
+        }
+
+        .#{$name}-center {
+            justify-content: center;
+            &-block {
+                @extend .#{$name}-start;
+                text-align: center;
+            }
+        }
+
+        .#{$name}-end {
+            justify-content: flex-end;
+            &-block {
+                @extend .#{$name}-start;
+                text-align: right;
+            }
+        }
+
+        .#{$name}-around {
+            justify-content: space-around;
+        }
+
+        .#{$name}-between {
+            justify-content: space-between;
+        }
+
+        .#{$name}-top {
+            align-items: start;
+        }
+
+        .#{$name}-middle {
+            align-items: center;
+        }
+
+        .#{$name}-bottom {
+            align-items: flex-end;
+        }
+
+        .#{$name}-auto {
+            flex: 0 0 auto;
+            max-width: none;
+            width: auto;
+        }
+
+        .#{$name}-shrink {
+            flex: 1 1 auto;
+            max-width: none;
+            width: auto;
+        }
+        .#{$name}-first {
+            order: -1;
+        }
+
+        .#{$name}-last {
+            order: 1;
+        }
+
+        .#{$name}-reverse {
+            flex-direction: row-reverse;
+        }
+
+        .#{$name}-hide {
+            display: none;
+        }
+
+        .#{$name}-show {
+            display: block;
+        }
+    }
+}
+
+.container.fluid {
+    max-width: map-item-key($breakpoints, -1);
+    width: 100%;
+}
+
+.row {
+    $one-col-gap: map-item-key($col-gap-map, 1);
+    display: flex;
+    flex-wrap: wrap;
+    &.shrink > .col {
+        flex: 1 1 auto;
+        max-width: none;
+        width: auto;
+    }
+    // &.gap-x.nogap {
+    //     overflow-x: hidden;
+    // }
+    // &.gap.nogap {
+    //     overflow-x: hidden;
+    // }
+}
+
+/////////////// gaps ///////////////
+// @each $index, $gap in $gaps {
+//     @for $i from 1 through length($gap) {
+//         $gap-number: strip-unit(nth($gap, $i));
+//         $gap-size: nth($gap, $i);
+//         $letter: str-slice($index, 1, 1);
+
+//         .m#{$letter}#{$gap-number} {
+//             margin-#{$index}: $gap-size !important;
+//         }
+//         .p#{$letter}#{$gap-number} {
+//             padding-#{$index}: $gap-size !important;
+//         }
+//     }
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+// @if $dev {
+//     * {
+//         outline: 1px solid red;
+//     }
+// }

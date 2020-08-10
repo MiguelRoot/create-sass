@@ -1,0 +1,367 @@
+html {
+  box-sizing: border-box;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 16px;
+  // overflow-x: hidden;
+  // overflow-y: scroll;
+}
+
+// [class^="mybox close"] {
+//   color:  #fff;
+// }
+
+*,
+*:after,
+*:before {
+  box-sizing: inherit;
+  padding: 0;
+  margin: 0;
+}
+
+@import "scss/css";
+
+//breakpoints
+// 48 * 20 + 64
+// 48 * 24 + 64
+// 48 * 28 + 64
+
+$config: (
+  "dev": false,
+  "rem": 16px,
+  "columns": 12,
+  "breakpoints": (
+      "xs": 0,
+      "sm": 769px,
+      "md": 1024px,
+      "lg": 1216px,
+      "xl": 1408px
+  ),
+  "container-gap": 5px 15px 30px,
+  "col-gap": 5px 10px 40px
+) !default;
+
+@function list-to-map($keymap, $tolist) {
+  $containerKey: map-keys($keymap);
+  $nmap: () !default;
+  @for $i from 1 through length($tolist) {
+      $cmap: (#{nth($containerKey, $i)}: nth($tolist, $i));
+      $nmap: map-merge($nmap, $cmap);
+  }
+  @return $nmap;
+}
+
+$dev: map-get($config, dev);
+$rem: map-get($config, rem);
+$columns: map-get($config, columns);
+$breakpoints: map-get($config, breakpoints);
+$gap: map-get($config, gap);
+$container-gap: map-get($config, container-gap);
+$col-gap: map-get($config, col-gap);
+
+$container-gap-map: list-to-map($breakpoints, $container-gap);
+$col-gap-map: list-to-map($breakpoints, $col-gap);
+
+@function rem($size) {
+  $remSize: $size / $rem;
+  @return #{$remSize}rem;
+}
+
+@function sum($slist, $unit) {
+  $sum: 0 !default;
+  @each $num in $slist {
+      @if (str-index($num + "", $unit)) {
+          $sum: $sum + $num;
+      }
+  }
+  @return $sum;
+}
+
+@function size-gap($fgap) {
+  @if (length($fgap) == 1) {
+      @return $fgap;
+  } @else if (length($fgap) < length($breakpoints)) {
+      $nsgap: $fgap !default;
+      @for $i from length($fgap) to length($breakpoints) {
+          $nsgap2: append($nsgap, nth($fgap, -1));
+          $nsgap: $nsgap2;
+      }
+      @return $nsgap;
+  } @else {
+      @return $fgap;
+  }
+}
+
+@function repeat($count, $value: 1) {
+  $return: ();
+
+  @for $i from 1 through $count {
+      $return: join($return, $value);
+  }
+
+  @return $return;
+}
+
+@function count-unit($clist, $cunit) {
+  $return: 0;
+  @for $i from 1 through length($clist) {
+      @if (unit(nth($clist, $i)) == $cunit) {
+          $return: $return + 1;
+      }
+  }
+  @return $return;
+}
+
+@function map-item-key($itk-map, $itk-index) {
+  $keys: map-keys($itk-map);
+  $index: nth($keys, $itk-index);
+  @return map-get($itk-map, $index);
+}
+
+/// mixin
+@mixin row($gap, $sizes: false) {
+  $list-sizes: if($sizes, $sizes, $gap);
+  $list-total: length($list-sizes);
+  $fr-total: count-unit($list-sizes, "fr");
+  $sum-total: sum($list-sizes, "px");
+
+  $option: (
+      gap: "p",
+      gap-x: "p-x",
+      gap-y: "p-y",
+      nogap: "nogap"
+  );
+
+  @for $i from 1 through length($list-sizes) {
+      @if (str-index(nth($list-sizes, $i) + "", "fr")) {
+          & > .col:nth-child(#{$list-total}n + #{$i}) {
+              width: calc(#{100% / $fr-total} - #{$sum-total / $fr-total});
+          }
+      } @else {
+          & > .col:nth-child(#{$list-total}n + #{$i}) {
+              width: nth($list-sizes, $i);
+          }
+      }
+  }
+
+  @if ($sizes) {
+      @for $i from 1 through length($gap) {
+          @if map-has-key($option, nth($gap, $i)) {
+              @if map-get($option, nth($gap, $i)) == "p" {
+                  & > .col {
+                      padding: nth($gap, $i + 1);
+                  }
+              } @else if map-get($option, nth($gap, $i)) == "p-x" {
+                  & > .col {
+                      padding-left: nth($gap, $i + 1);
+                      padding-right: nth($gap, $i + 1);
+                  }
+              } @else if map-get($option, nth($gap, $i)) == "p-y" {
+                  & > .col {
+                      padding-top: nth($gap, $i + 1);
+                      padding-bottom: nth($gap, $i + 1);
+                  }
+              } @else if map-get($option, nth($gap, $i)) == "nogap" {
+                  & > .col:nth-child(#{$list-total}n + 1) {
+                      padding-left: 0;
+                  }
+                  & > .col:nth-child(#{$list-total}n + #{$list-total}) {
+                      padding-right: 0;
+                  }
+              }
+          }
+      }
+  }
+}
+
+@mixin from($breakpoint) {
+  @if map-has-key($breakpoints, $breakpoint) {
+      $sizes: map-get($breakpoints, $breakpoint);
+      @media only screen and (min-width: nth($sizes, 1)) {
+          @content;
+      }
+  } @else if(type-of($breakpoint) == number) {
+      @media only screen and (min-width: $breakpoint) {
+          @content;
+      }
+  }
+}
+
+.container {
+  // $container-max: map-get($breakpoints, index-to-key(-1));
+  margin-right: auto;
+  margin-left: auto;
+  overflow-x: hidden;
+  max-width: map-item-key($breakpoints, -1);
+}
+
+.row {
+  $one-col-gap: map-item-key($col-gap-map, 1);
+  display: flex;
+  flex-wrap: wrap;
+  &.shrink > .col {
+      flex: 1 1 auto;
+      max-width: none;
+      width: auto;
+  }
+  &.gap-x.nogap {
+      overflow-x: hidden;
+  }
+  &.gap.nogap {
+      overflow-x: hidden;
+  }
+  // &.gap {
+  //     & > .col {
+  //         padding: ($one-col-gap/2) $one-col-gap;
+  //     }
+  // }
+  // &.gap-x {
+  //     & > .col {
+  //         padding-right: $one-col-gap;
+  //         padding-left: $one-col-gap;
+  //     }
+  // }
+  // &.gap-y {
+  //     & > .col {
+  //         padding-top: $one-col-gap;
+  //         padding-bottom: $one-col-gap;
+  //     }
+  // }
+}
+
+.col {
+  display: block;
+  flex: 0 0 auto;
+  width: 100%;
+}
+
+@each $index, $breakpoint in $breakpoints {
+  .#{$index}-show {
+      display: none;
+  }
+}
+
+/////////////// breakpoint ///////////////
+@each $key, $breakpoint in $breakpoints {
+  $name: $key;
+  $size: nth($breakpoint, 1);
+
+  $counter: 1 !default;
+
+  @include from($name) {
+      .container {
+          @if $size > 0 {
+              max-width: $size;
+          }
+          @if map-has-key($container-gap-map, $name) {
+              padding-left: map-get($container-gap-map, $name);
+              padding-right: map-get($container-gap-map, $name);
+          }
+      }
+
+      @if map-has-key($col-gap-map, $name) {
+          .row {
+              $one-col-gap: map-get($col-gap-map, $name);
+              &.gap-x.nogap {
+                  margin-left: -$one-col-gap;
+                  margin-right: -$one-col-gap;
+              }
+              &.gap.nogap {
+                  margin-left: -$one-col-gap;
+                  margin-right: -$one-col-gap;
+              }
+              &.gap {
+                  & > .col {
+                      padding: ($one-col-gap/2) $one-col-gap;
+                  }
+              }
+              &.gap-x {
+                  & > .col {
+                      padding-right: $one-col-gap;
+                      padding-left: $one-col-gap;
+                  }
+              }
+              &.gap-y {
+                  & > .col {
+                      padding-top: $one-col-gap;
+                      padding-bottom: $one-col-gap;
+                  }
+              }
+          }
+      }
+
+      @for $i from 1 through $columns {
+          .#{$name}-#{$i} {
+              width: (100% / $columns * $i);
+          }
+      }
+
+      .#{$name}-start {
+          justify-content: start;
+          text-align: left;
+      }
+
+      .#{$name}-center {
+          justify-content: center;
+          text-align: center;
+      }
+
+      .#{$name}-end {
+          justify-content: flex-end;
+          text-align: right;
+      }
+
+      .#{$name}-around {
+          justify-content: space-around;
+      }
+
+      .#{$name}-between {
+          justify-content: space-between;
+      }
+
+      .#{$name}-top {
+          align-items: start;
+      }
+
+      .#{$name}-middle {
+          align-items: center;
+      }
+
+      .#{$name}-bottom {
+          align-items: end;
+      }
+
+      .#{$name}-auto {
+          flex: 0 0 auto;
+          max-width: none;
+          width: auto;
+      }
+
+      .#{$name}-shrink {
+          flex: 1 1 auto;
+          max-width: none;
+          width: auto;
+      }
+
+      .#{$name}-hide {
+          display: none;
+      }
+
+      .#{$name}-show {
+          display: block;
+      }
+  }
+}
+
+.container.fluid {
+  // $container-max: map-get($breakpoints, index-to-key(-1));
+  max-width: map-item-key($breakpoints, -1);
+  width: 100%;
+}
+
+.listcol {
+  @include row(100px 1fr 100px);
+
+  @include from(md) {
+      @include row(gap 10px nogap, 100px 1fr 1fr 100px);
+  }
+}
